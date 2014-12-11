@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>MyBaby</title>
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/ripples.min.css" rel="stylesheet">
+        <link href="css/material-wfont.min.css" rel="stylesheet">
+		<link href="css/custom.css" rel="stylesheet">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="js-plots/excanvas.min.js"></script><![endif]-->
+	</head>
+	<body>
+	
+		<nav class="navbar navbar-material-purple navbar-fixed-top" role="navigation">
+		  <div class="container">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  <a class="navbar-brand" href="#">MyBaby</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+			  <ul class="nav navbar-nav">
+				<li class="active"><a href="#">Home</a></li>
+				<li><a href="#about">About</a></li>
+				<li class="dropdown">
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+				  <ul class="dropdown-menu" role="menu">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else</a></li>
+				  </ul>
+				</li>
+			  </ul>
+			  <ul class="nav navbar-nav navbar-right">
+				<li><a href="#">Login? <span class="sr-only">(current)</span></a></li>
+			  </ul>
+			</div>
+		  </div>
+		</nav>
+		
+		<div class="container">
+		
+			<div class="row">
+				<div class="col-lg-12 col-md-12 col-xs-12">
+					<form id="uploadimage" class="well bs-component" method="post" enctype="multipart/form-data">
+						<div class="input-group">
+							<div class="form-control-wrapper fileinput">
+								<input class="form-control empty purple" type="text" readonly="">
+								<input id="inputFile" type="file" name="file">
+								<div class="floating-label">Scegli immagine</div>
+								<span class="material-input"></span>
+							</div>
+							<span class="input-group-btn">
+								<button type="submit" class="btn btn-material-purple">carica</button>
+							</span>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="row loader">
+				<div class="col-lg-12 col-md-12 col-xs-12">
+					<img src="images/loader.svg" />
+				</div>
+			</div>
+			
+			<div class="row graphs">
+				<div class="col-lg-6 col-md-12 col-xs-12">
+					<h4 id="graph0_title" class="title"></h4>
+					<div id="graph0" class="plot"></div>
+				</div>
+				<div  class="col-lg-6 col-md-12 col-xs-12">
+					<h4 id="graph1_title" class="title"></h4>
+					<div id="graph1" class="plot"></div>
+				</div>
+			</div>
+			
+			<div class="row error">
+				<div class="col-lg-12 col-md-12 col-xs-12">
+					<div class="well well-material-red bs-component">
+						<span id="log-message"></span>
+					</div>
+				</div>
+			</div>
+		
+		</div>
+			
+		<div id="init" class="modal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">ATTENZIONE</h4>
+					</div>
+					<div class="modal-body">
+						<p>
+							Il software &egrave; in fase pre-produzione e protrebbe presentare problemi inaspettati.
+							<br/>
+							Non fate totale affidamento su di esso, ma rivolgetevi sempre ad uno specialista.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">no grazie</button>
+						<button type="button" class="btn btn-material-purple" data-dismiss="modal">accetto</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		<script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+		<script src="js/ripples.min.js"></script>
+        <script src="js/material.min.js"></script>
+		<script src="js-plots/jquery.flot.min.js"></script>
+		<script src="js-plots/data.js"></script>
+		
+		<script>
+            $(function() {
+				$.material.init();
+				$('#uploadimage')[0].reset();
+            });
+			
+			$(window).load(function(){
+				$('#init').modal('show');
+			});
+        </script>
+		
+		<script>
+			$(document).ready(function (e) {
+			
+				var validFile = false;
+			
+				$('.fileinput #inputFile').change(function() {
+					$('.fileinput .floating-label').empty();
+					$('.fileinput .empty').val($(this).val());
+					$('.error').css('display', 'none');
+					$('.error #log-message').empty();
+					$('.graphs').css('display', 'none');
+					for (var index = 0; index < 2; index++) {
+						$('#graph'+index).empty();
+						$('#graph'+index+'_title').text('');
+						$('#graph'+index).css('display', 'none');
+					}
+					var filetype = this.files[0].type;
+					var match = ['image/jpeg', 'image/jpg'];
+					if(!((filetype==match[0]) || (filetype==match[1]))) {
+						$('.error #log-message').text('Seleziona un file immagine valido con estensione jpeg o jpg.');
+						$('.error').css('display', 'block');
+						$('.fileinput .empty').text('');
+						$('.fileinput .floating-label').html('Scegli immagine');
+						validFile = false;
+					} else {
+						$('.error').css('display', 'none');
+						$('.fileinput .floating-label').html('');
+						validFile = true;
+					}
+				});
+			
+				$('#uploadimage').on('submit', function(e) {
+					e.preventDefault();
+					if (validFile) {
+						$('.loader').css('display', 'block');
+						$('.error #log-message').empty();
+						$.ajax({
+							url: 'json.php',
+							type: 'POST',
+							data: new FormData(this),
+							contentType: false,
+							cache: false,
+							processData: false,
+							success: function(data) {
+								$('.error').css('display', 'block');
+								$('.error #log-message').html(data);
+								$('.loader').css('display', 'none');
+								var obj = $.parseJSON(data);
+								if (obj != '') {
+									$('.graphs').css('display', 'block');
+									$.each(obj.values, function( index, value ) {
+										$('#graph'+index).css('display', 'block');
+										$('#graph'+index+'_title').text(value[0] + ': ' + value[1]);
+										draw_graph('#graph'+index, value[0], value[3].substring(0,2) + '.' + Math.round(value[3].substring(3,4) * 10/7), value[1]);
+									});
+								} else
+									$('.error #log-message').text('Si è verificato un errore nell\'elaborazione del file.');
+							}
+						});
+					}
+				});
+				
+			});
+		</script>
+	
+	</body>
+</html>

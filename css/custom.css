@@ -1,0 +1,87 @@
+body {
+	padding-top: 70px;
+}
+
+.btn.btn-material-purple:hover,
+.btn.btn-material-purple:focus,
+.btn.btn-material-purple.focus {
+    color: rgba(255, 255, 255, 0.84);
+}
+
+.btn.btn-material-deeppurple:hover,
+.btn.btn-material-deeppurple:focus,
+.btn.btn-material-deeppurple.focus {
+    color: rgba(255, 255, 255, 0.84);
+}
+
+#init .modal-dialog {
+	top: 30%;
+}
+
+.input-group .form-control,
+.input-group .form-control:focus,
+.input-group .form-control:active,
+.input-group .form-control:not(textarea):not(select) {
+	height: 36px;
+}
+
+.form-control-wrapper .floating-label {
+	top: 8px;
+}
+
+.input-group .input-group-btn .btn {
+	border-radius: 0px;
+}
+
+.container .well .form-control.purple,
+.container .well:not([class^="well well-material-"]) .form-control.purple {
+	border-bottom-color: #9C27B0;
+}
+
+.error  {
+	display: none;
+}
+
+.loader  {
+	display: none;
+}
+
+.loader  > div {
+	height: 200px;
+	text-align: center;
+}
+
+.loader  > div > img {
+	margin-top: 150px;
+}
+
+.graphs {
+	display: none;
+	margin-bottom: 30px;
+}
+
+.graphs > div > h4.title {
+	width: 100%;
+	text-align: center;
+}
+
+.graphs > div > div.plot {
+	width: 100%;
+	height: 400px;
+}
+
+@media screen and (max-width: 480px) {
+
+	#init {
+		padding-left: 0px !important;
+	}
+
+}
+
+@media screen and (min-width: 1200px) {
+
+	body {
+		padding-top: 80px;
+	}
+
+}
