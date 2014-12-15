@@ -2,6 +2,17 @@ body {
 	padding-top: 70px;
 }
 
+.form-group .material-input-purple:before,
+.form-group-default .material-input-purple:before,
+.form-group-primary .material-input-purple:before {
+    background-color: #9C27B0;
+}
+
+.form-control-wrapper .form-control:focus ~ .material-input.material-input-purple:after,
+.form-control-wrapper .form-control.focus ~ .material-input.material-input-purple:after {
+	background-color: #9C27B0;
+}
+
 .btn.btn-material-purple:hover,
 .btn.btn-material-purple:focus,
 .btn.btn-material-purple.focus {
@@ -33,6 +44,14 @@ body {
 	border-radius: 0px;
 }
 
+select.form-control {
+    height: 28px;
+}
+
+.form-group .toright {
+	text-align: right;
+}
+
 .container .well .form-control.purple,
 .container .well:not([class^="well well-material-"]) .form-control.purple {
 	border-bottom-color: #9C27B0;
@@ -53,6 +72,14 @@ body {
 
 .loader  > div > img {
 	margin-top: 150px;
+}
+
+.manual {
+	display: none;
+}
+
+.manual div.form-control-wrapper {
+	margin-bottom: 16px;
 }
 
 .graphs {

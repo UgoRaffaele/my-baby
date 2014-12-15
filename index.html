@@ -25,7 +25,7 @@
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 			  <ul class="nav navbar-nav">
-				<li class="active"><a href="#">Home</a></li>
+				<li class="active"><a href="#">Home</a><span class="sr-only">(current)</span></li>
 				<li><a href="#about">About</a></li>
 				<li class="dropdown">
 				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -37,7 +37,7 @@
 				</li>
 			  </ul>
 			  <ul class="nav navbar-nav navbar-right">
-				<li><a href="#">Login? <span class="sr-only">(current)</span></a></li>
+				<li id="insMan"><a href="#">Ins. manuale</a></li>
 			  </ul>
 			</div>
 		  </div>
@@ -66,6 +66,62 @@
 			<div class="row loader">
 				<div class="col-lg-12 col-md-12 col-xs-12">
 					<img src="images/loader.svg" />
+				</div>
+			</div>
+			
+			<div class="row manual">
+				<div class="col-lg-12 col-md-12 col-xs-12">
+					<form id="insert" class="well form-horizontal" method="post">
+						<fieldset>
+							<legend>Inserimento manuale</legend>
+							<div class="form-group">
+								<label for="inputName" class="col-lg-1 control-label">Nome</label>
+								<div class="col-lg-11">
+									<div class="form-control-wrapper">
+										<input class="form-control empty" id="inputName"/>
+										<span class="material-input material-input-purple"></span>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="inputType" class="col-lg-1 control-label">Esame</label>
+								<div class="col-lg-3">
+									<div class="form-control-wrapper">
+										<select class="form-control" id="inputType">
+											<option>AC</option>
+											<option>BPD</option>
+											<option>FL</option>
+											<option>HC</option>
+										</select>
+										<span class="material-input material-input-purple"></span>
+									</div>
+								</div>
+								<label for="inputWeek" class="col-lg-1 control-label">Settimana</label>
+								<div class="col-lg-3">
+									<div class="form-control-wrapper">
+										<input class="form-control empty" id="inputWeek" type="number" min="14" max="41" step="1" value="14"/>
+										<span class="material-input material-input-purple"></span>
+									</div>
+								</div>
+								<label for="inputValue" class="col-lg-1 control-label">Valore</label>
+								<div class="col-lg-3">
+									<div class="form-control-wrapper">
+										<input class="form-control empty" id="inputValue" type="number" min="0" max="50" step="0.01" />
+										<span class="material-input material-input-purple"></span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<div class="form-group">
+							<div class="col-lg-12 col-md-12 col-xs-12 toright">
+								<div class="input-group">
+									<span class="input-group-btn">
+										<button type="submit" class="btn btn-material-purple">carica</button>
+									</span>
+								</div>
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 			
@@ -139,6 +195,8 @@
 					$('.fileinput .empty').val($(this).val());
 					$('.error').css('display', 'none');
 					$('.error #log-message').empty();
+					$('#insert')[0].reset();
+					$('.manual').css('display', 'none');
 					$('.graphs').css('display', 'none');
 					for (var index = 0; index < 2; index++) {
 						$('#graph'+index).empty();
@@ -184,11 +242,56 @@
 										$('#graph'+index+'_title').text(value[0] + ': ' + value[1]);
 										draw_graph('#graph'+index, value[0], value[3].substring(0,2) + '.' + Math.round(value[3].substring(3,4) * 10/7), value[1]);
 									});
-								} else
+								} else {
 									$('.error #log-message').text('Si è verificato un errore nell\'elaborazione del file.');
+									$('#insert')[0].reset();
+									$('.manual').css('display', 'block');
+								}
 							}
 						});
 					}
+				});
+				
+				$('#insMan').on('click', function(e) {
+					e.preventDefault();
+					$('#insert')[0].reset();
+					$('.graphs').css('display', 'none');
+					for (var index = 0; index < 2; index++) {
+						$('#graph'+index).empty();
+						$('#graph'+index+'_title').text('');
+						$('#graph'+index).css('display', 'none');
+					}
+					$('.error #log-message').text('');
+					$('.error').css('display', 'none');
+					$('.manual').css('display', 'block');
+				});
+				
+				$('#insert').on('submit', function(e) {
+					e.preventDefault();
+					$('.graphs').css('display', 'block');
+					$('#graph0').css('display', 'block');
+					$('#graph0_title').text($('#inputType').val() + ': ' + $('#inputValue').val());
+					draw_graph('#graph0', $('#inputType').val(), $('#inputWeek').val(), $('#inputValue').val());
+					$('.manual').css('display', 'none');
+					
+					var res = 0;
+					switch ($('#inputType').val()) {
+						case 'AC':
+							res = $('#inputValue').val() / AC_data.med[$('#inputWeek').val()-14] * 100;
+							break;
+						case 'BPD':
+							res = $('#inputValue').val() / BPD_data.med[$('#inputWeek').val()-14] * 100;
+							break;
+						case 'FL':
+							res = $('#inputValue').val() / FL_data.med[$('#inputWeek').val()-14] * 100;
+							break;
+						case 'HC':
+							res = $('#inputValue').val() / HC_data.med[$('#inputWeek').val()-14] * 100;
+							break;
+					}
+					
+					$('.error #log-message').text('{"name":"' + $('#inputName').val() + '","values":[["' + $('#inputType').val() + '","' + $('#inputValue').val() + '","cm","' + $('#inputWeek').val() + '","' + parseFloat(res).toFixed(2) + '"]]}');
+					$('.error').css('display', 'block');
 				});
 				
 			});
